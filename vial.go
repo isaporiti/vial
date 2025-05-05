@@ -6,7 +6,7 @@ package vial
 //
 // It supports special formatting for strings and runes to make
 // diffs easier to read.
-func Equal[C comparable](t T, want, got C) {
+func Equal[C comparable](t test, want, got C) {
 	if want != got {
 		var format string
 		switch any(want).(type) {
@@ -23,7 +23,7 @@ func Equal[C comparable](t T, want, got C) {
 
 // True reports a test failure if expr is not true.
 // It is intended as a lightweight assertion for boolean expressions.
-func True(t T, expr bool) {
+func True(t test, expr bool) {
 	if !expr {
 		t.Errorf(colorRed.wrap("expression is not true"))
 	}
@@ -31,13 +31,13 @@ func True(t T, expr bool) {
 
 // NoError reports a test failure if err is not nil.
 // To assert that operations succeeded without error.
-func NoError(t T, err error) {
+func NoError(t test, err error) {
 	if err != nil {
 		t.Errorf(colorRed.wrap("unexpected error: %v"), err)
 	}
 }
 
-// T is an interface that partailly matches *testing.T.
-type T interface {
+// test is an interface that partailly matches *testing.test.
+type test interface {
 	Errorf(format string, args ...any)
 }
