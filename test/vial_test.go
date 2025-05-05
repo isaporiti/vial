@@ -25,7 +25,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal string",
 			a:    "foo",
 			b:    "bar",
-			want: vial.ColorRed.String() + `want "foo", got "bar"` + vial.ColorReset.String(),
+			want: "\033[31m" + `want "foo", got "bar"` + "\033[0m",
 		},
 		{
 			desc: "equal int",
@@ -36,7 +36,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal int",
 			a:    7,
 			b:    0,
-			want: vial.ColorRed.String() + "want 7, got 0" + vial.ColorReset.String(),
+			want: "\033[31m" + "want 7, got 0" + "\033[0m",
 		},
 		{
 			desc: "equal float32",
@@ -47,7 +47,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal float32",
 			a:    1.53,
 			b:    0.53,
-			want: vial.ColorRed.String() + "want 1.53, got 0.53" + vial.ColorReset.String(),
+			want: "\033[31m" + "want 1.53, got 0.53" + "\033[0m",
 		},
 		{
 			desc: "equal bool",
@@ -58,7 +58,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal bool",
 			a:    true,
 			b:    false,
-			want: vial.ColorRed.String() + "want true, got false" + vial.ColorReset.String(),
+			want: "\033[31m" + "want true, got false" + "\033[0m",
 		},
 		{
 			desc: "equal rune",
@@ -69,7 +69,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal rune",
 			a:    'a',
 			b:    'c',
-			want: vial.ColorRed.String() + "want 'a', got 'c'" + vial.ColorReset.String(),
+			want: "\033[31m" + "want 'a', got 'c'" + "\033[0m",
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -117,7 +117,7 @@ func TestTrue(t *testing.T) {
 			t.Error("want test to fail, but did not")
 		}
 
-		want := vial.ColorRed.String() + "expression is not true" + vial.ColorReset.String()
+		want := "\033[31m" + "expression is not true" + "\033[0m"
 		got := out.String()
 		if want != got {
 			t.Errorf("%q != %q", want, got)
@@ -149,10 +149,10 @@ func TestNoError(t *testing.T) {
 			t.Error("want mock T to fail, but didn't")
 		}
 
-		want := vial.ColorRed.String() +
+		want := "\033[31m" +
 			"unexpected error: " +
 			err.Error() +
-			vial.ColorReset.String()
+			"\033[0m"
 		got := out.String()
 		if want != got {
 			t.Errorf("%q != %q", want, got)

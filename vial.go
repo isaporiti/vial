@@ -17,7 +17,7 @@ func Equal[C comparable](t T, want, got C) {
 		default:
 			format = "want %v, got %v"
 		}
-		t.Errorf(ColorRed.wrap(format), want, got)
+		t.Errorf(colorRed.wrap(format), want, got)
 	}
 }
 
@@ -25,7 +25,7 @@ func Equal[C comparable](t T, want, got C) {
 // It is intended as a lightweight assertion for boolean expressions.
 func True(t T, expr bool) {
 	if !expr {
-		t.Errorf(ColorRed.wrap("expression is not true"))
+		t.Errorf(colorRed.wrap("expression is not true"))
 	}
 }
 
@@ -33,7 +33,7 @@ func True(t T, expr bool) {
 // To assert that operations succeeded without error.
 func NoError(t T, err error) {
 	if err != nil {
-		t.Errorf(ColorRed.wrap("unexpected error: %v"), err)
+		t.Errorf(colorRed.wrap("unexpected error: %v"), err)
 	}
 }
 
