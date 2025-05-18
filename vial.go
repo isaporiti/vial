@@ -53,7 +53,7 @@ type test interface {
 type callerFunc func() string
 
 func defaultCaller() string {
-	_, path, line, ok := runtime.Caller(0)
+	_, path, line, ok := runtime.Caller(2)
 	if !ok {
 		return ""
 	}
