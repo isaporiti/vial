@@ -18,7 +18,7 @@ func Equal[C comparable](t test, want, got C) {
 		default:
 			format = "want %v, got %v"
 		}
-		t.Errorf(colorRed.wrap(format), want, got)
+		t.Errorf(format, want, got)
 	}
 }
 
@@ -27,7 +27,7 @@ func Equal[C comparable](t test, want, got C) {
 func True(t test, expr bool) {
 	t.Helper()
 	if !expr {
-		t.Errorf(colorRed.wrap("expression is not true"))
+		t.Errorf("expression is not true")
 	}
 }
 
@@ -36,11 +36,11 @@ func True(t test, expr bool) {
 func NoError(t test, err error) {
 	t.Helper()
 	if err != nil {
-		t.Errorf(colorRed.wrap("unexpected error: %v"), err)
+		t.Errorf("unexpected error: %v", err)
 	}
 }
 
-// test is an interface that partially matches *testing.test.
+// test is an interface that partially matches *testing.T.
 type test interface {
 	Errorf(format string, args ...any)
 	Helper()

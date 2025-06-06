@@ -25,7 +25,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal string",
 			a:    "foo",
 			b:    "bar",
-			want: "\033[31m" + `want "foo", got "bar"` + "\033[0m",
+			want: `want "foo", got "bar"`,
 		},
 		{
 			desc: "equal int",
@@ -36,7 +36,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal int",
 			a:    7,
 			b:    0,
-			want: "\033[31m" + `want 7, got 0` + "\033[0m",
+			want: `want 7, got 0`,
 		},
 		{
 			desc: "equal float32",
@@ -47,7 +47,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal float32",
 			a:    1.53,
 			b:    0.53,
-			want: "\033[31m" + "want 1.53, got 0.53" + "\033[0m",
+			want: "want 1.53, got 0.53",
 		},
 		{
 			desc: "equal bool",
@@ -58,7 +58,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal bool",
 			a:    true,
 			b:    false,
-			want: "\033[31m" + "want true, got false" + "\033[0m",
+			want: "want true, got false",
 		},
 		{
 			desc: "equal rune",
@@ -69,7 +69,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal rune",
 			a:    'a',
 			b:    'c',
-			want: "\033[31m" + "want 'a', got 'c'" + "\033[0m",
+			want: "want 'a', got 'c'",
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -126,7 +126,7 @@ func TestTrue(t *testing.T) {
 			t.Error("want mock T to have called Helper, but didn't")
 		}
 
-		want := "\033[31m" + "expression is not true" + "\033[0m"
+		want := "expression is not true"
 		got := out.String()
 		if want != got {
 			t.Errorf("%q != %q", want, got)
@@ -164,10 +164,7 @@ func TestNoError(t *testing.T) {
 			t.Error("want mock T to have called Helper, but didn't")
 		}
 
-		want := "\033[31m" +
-			"unexpected error: " +
-			err.Error() +
-			"\033[0m"
+		want := "unexpected error: " + err.Error()
 		got := out.String()
 		if want != got {
 			t.Errorf("%q != %q", want, got)
