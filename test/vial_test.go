@@ -25,7 +25,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal string",
 			a:    "foo",
 			b:    "bar",
-			want: "\033[31m" + `a/b/c.go:4: want "foo", got "bar"` + "\033[0m",
+			want: "\033[31m" + `want "foo", got "bar"` + "\033[0m",
 		},
 		{
 			desc: "equal int",
@@ -36,7 +36,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal int",
 			a:    7,
 			b:    0,
-			want: "\033[31m" + "a/b/c.go:4: want 7, got 0" + "\033[0m",
+			want: "\033[31m" + `want 7, got 0` + "\033[0m",
 		},
 		{
 			desc: "equal float32",
@@ -47,7 +47,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal float32",
 			a:    1.53,
 			b:    0.53,
-			want: "\033[31m" + "a/b/c.go:4: want 1.53, got 0.53" + "\033[0m",
+			want: "\033[31m" + "want 1.53, got 0.53" + "\033[0m",
 		},
 		{
 			desc: "equal bool",
@@ -58,7 +58,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal bool",
 			a:    true,
 			b:    false,
-			want: "\033[31m" + "a/b/c.go:4: want true, got false" + "\033[0m",
+			want: "\033[31m" + "want true, got false" + "\033[0m",
 		},
 		{
 			desc: "equal rune",
@@ -69,7 +69,7 @@ func TestEqual(t *testing.T) {
 			desc: "unequal rune",
 			a:    'a',
 			b:    'c',
-			want: "\033[31m" + "a/b/c.go:4: want 'a', got 'c'" + "\033[0m",
+			want: "\033[31m" + "want 'a', got 'c'" + "\033[0m",
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -77,13 +77,16 @@ func TestEqual(t *testing.T) {
 			out := &bytes.Buffer{}
 			mt := mockT{out: out}
 
-			vial.Equal(&mt, tc.a, tc.b, vial.WithCallerFunc(mockCallerFunc))
+			vial.Equal(&mt, tc.a, tc.b)
 
 			if tc.want == "" && mt.failed {
 				t.Error("want test to pass, but it failed")
 			}
 			if tc.want != "" && !mt.failed {
 				t.Error("want test to fail, but did not")
+			}
+			if !mt.helperCalled {
+				t.Error("want mock T to have called Helper, but didn't")
 			}
 
 			got := out.String()
@@ -99,25 +102,31 @@ func TestTrue(t *testing.T) {
 		t.Parallel()
 		var mt mockT
 
-		vial.True(&mt, "foo" != "bar", vial.WithCallerFunc(mockCallerFunc))
+		vial.True(&mt, "foo" != "bar")
 
 		if mt.failed {
 			t.Error("want mock T not to fail, but did")
 		}
+		if !mt.helperCalled {
+			t.Error("want mock T to have called Helper, but didn't")
+		}
 	})
 
-	t.Run("not true", func(t *testing.T) {
+	t.Run("false", func(t *testing.T) {
 		t.Parallel()
 		out := &bytes.Buffer{}
 		mt := mockT{out: out}
 
-		vial.True(&mt, "foo" == "bar", vial.WithCallerFunc(mockCallerFunc))
+		vial.True(&mt, "foo" == "bar")
 
 		if !mt.failed {
 			t.Error("want test to fail, but did not")
 		}
+		if !mt.helperCalled {
+			t.Error("want mock T to have called Helper, but didn't")
+		}
 
-		want := "\033[31m" + "a/b/c.go:4: expression is not true" + "\033[0m"
+		want := "\033[31m" + "expression is not true" + "\033[0m"
 		got := out.String()
 		if want != got {
 			t.Errorf("%q != %q", want, got)
@@ -130,10 +139,13 @@ func TestNoError(t *testing.T) {
 		t.Parallel()
 		var mt mockT
 
-		vial.NoError(&mt, nil, vial.WithCallerFunc(mockCallerFunc))
+		vial.NoError(&mt, nil)
 
 		if mt.failed {
 			t.Error("want mock T not to fail, but did")
+		}
+		if !mt.helperCalled {
+			t.Error("want mock T to have called Helper, but didn't")
 		}
 	})
 
@@ -143,14 +155,16 @@ func TestNoError(t *testing.T) {
 		mt := mockT{out: out}
 		err := errors.New("uh-oh")
 
-		vial.NoError(&mt, err, vial.WithCallerFunc(mockCallerFunc))
+		vial.NoError(&mt, err)
 
 		if !mt.failed {
 			t.Error("want mock T to fail, but didn't")
 		}
+		if !mt.helperCalled {
+			t.Error("want mock T to have called Helper, but didn't")
+		}
 
 		want := "\033[31m" +
-			"a/b/c.go:4: " +
 			"unexpected error: " +
 			err.Error() +
 			"\033[0m"
@@ -162,8 +176,9 @@ func TestNoError(t *testing.T) {
 }
 
 type mockT struct {
-	failed bool
-	out    io.Writer
+	failed       bool
+	helperCalled bool
+	out          io.Writer
 }
 
 func (t *mockT) Errorf(format string, args ...any) {
@@ -171,6 +186,6 @@ func (t *mockT) Errorf(format string, args ...any) {
 	fmt.Fprintf(t.out, format, args...)
 }
 
-func mockCallerFunc() string {
-	return "a/b/c.go:4"
+func (t *mockT) Helper() {
+	t.helperCalled = true
 }
